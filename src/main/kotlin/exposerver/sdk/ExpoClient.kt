@@ -1,7 +1,12 @@
 package exposerver.sdk
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import exposerver.sdk.api.ExpoRetrofitApi
 import exposerver.sdk.dto.ExpoPushMessage
+import exposerver.sdk.dto.ExpoPushTicket
+import exposerver.sdk.dto.ExpoResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -22,10 +27,14 @@ class ExpoClient(private val config: ExpoClientConfig) {
                 .addInterceptor(interceptor)
                 .build()
 
+        val mapper = ObjectMapper()
+        mapper.registerModule(KotlinModule())
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+
         return Retrofit.Builder()
                 .baseUrl(config.baseUrl)
                 .client(client)
-                .addConverterFactory(JacksonConverterFactory.create())
+                .addConverterFactory(JacksonConverterFactory.create(mapper))
                 .build().create(ExpoRetrofitApi::class.java)
     }
 
@@ -48,20 +57,14 @@ class ExpoClient(private val config: ExpoClientConfig) {
         }
     }
 
-    fun sendPushNotifications(messages: List<ExpoPushMessage>) {
+    fun sendPushNotifications(messages: List<ExpoPushMessage>): ExpoResponse<ExpoPushTicket> {
 
         val rawMessages = messages.map {
             it.toExpoPushMessageBody()
         }
 
         val response = retrofit.sendPushNotifications(rawMessages).execute()
-
-        println(response)
-
-        // Send
-
-        // Handle errors
-
+        return response.body() ?: ExpoResponse(emptyList())
     }
 
 }

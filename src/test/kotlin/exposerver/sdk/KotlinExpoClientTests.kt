@@ -1,8 +1,5 @@
 package exposerver.sdk
 
-import exposerver.sdk.dto.ExpoPushMessage
-import exposerver.sdk.dto.ExpoPushToken
-import exposerver.sdk.dto.PushSound
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -32,22 +29,5 @@ class KotlinExpoClientTests {
         val expo = ExpoClient(ExpoClientConfig())
         Assertions.assertTrue(expo.isExpoPushToken(token))
     }
-
-    @Test
-    fun sendPush() {
-        val expo = ExpoClient(ExpoClientConfig())
-
-        val map = HashMap<String, String>()
-        map["ooopa"] = "cheiro na pinta"
-
-        val message = ExpoPushMessage(
-                to = ExpoPushToken(token = "ExponentPushToken[ufAKiZAMgnxkdTOYQHDZNC]"),
-                sound = PushSound(name = "default", critical = true, volume = 1),
-                title = "EITA PORRA",
-                body = "Test", data = map
-        )
-        expo.sendPushNotifications(listOf(message))
-    }
-
 
 }
