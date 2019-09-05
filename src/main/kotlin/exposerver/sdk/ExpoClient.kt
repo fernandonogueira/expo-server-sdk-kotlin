@@ -1,6 +1,8 @@
 package exposerver.sdk
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationConfig
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import exposerver.sdk.api.ExpoRetrofitApi
@@ -30,6 +32,7 @@ class ExpoClient(private val config: ExpoClientConfig) {
         val mapper = ObjectMapper()
         mapper.registerModule(KotlinModule())
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
         return Retrofit.Builder()
                 .baseUrl(config.baseUrl)
